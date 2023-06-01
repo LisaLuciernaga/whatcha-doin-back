@@ -14,9 +14,9 @@ const userSchema = new Schema({
   friendsPending: [{ type: Schema.Types.ObjectID, ref: "User" }],
   notifications: [{ type: Schema.Types.ObjectID, ref: "Notification" }],
   role: { type: String, enum: ["newbie", "pro"], default: "newbie" },
-  eventsCreated: [{ type: schema.Types.ObjectID, ref: "Event" }],
-  eventsJoined: [{ type: schema.Types.ObjectID, ref: "Event" }],
-  eventsPending: [{ type: schema.Types.ObjectID, ref: "Event" }],
+  eventsCreated: [{ type: Schema.Types.ObjectID, ref: "Event" }],
+  eventsJoined: [{ type: Schema.Types.ObjectID, ref: "Event" }],
+  eventsPending: [{ type: Schema.Types.ObjectID, ref: "Event" }],
 });
 
 const User = model("User", userSchema);
