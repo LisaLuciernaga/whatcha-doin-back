@@ -1,9 +1,8 @@
 const router = require("express").Router();
 const User = require("../models/User.model");
-const { DateTime } = require("luxon");
+// const { DateTime } = require("luxon");
 
-const isLoggedIn = require("../middleware/isLoggedIn");
-const isLoggedOut = require("../middleware/isLoggedOut");
+const isAuthenticated = require("../middleware/jwt.middleware");
 
 const Event = require("../models/Event.model");
 const { Router } = require("express");
@@ -27,94 +26,131 @@ const { Router } = require("express");
 //   },
 // });
 
-// POST CREATE 
-router.post("/events/create", isLoggedIn, (req, res, next) => {
-    const { title, description, icon, dateTime, location, coordinates} = req.body;
-    let pendingJoiners = [];
+// POST CREATE
+// isAuthenticated changeLater
+router.post("/create", (req, res, next) => {
+  const {
+    title,
+    description,
+    icon,
+    dateTime,
+    location,
+    coordinates,
+    pendingJoiners,
+  } = req.body;
 
-    if (req.body.pendingJoiners && typeof req.body.pendingJoiners == "string") {
-      pendingJoiners = [req.body.pendingJoiners];
-    }
-    if (req.body.pendingJoiners && typeof req.body.pendingJoiners == "object") {
-      pendingJoiners = req.body.pendingJoiners;
-    }
-  
-    const newEvent = {
-      title,
-      creator: req.session.currentUser._id,
-      description,
-      icon,
-      dateTime,
-      location,
-      pendingJoiners, // Array of User IDs
-    };
-  
-    Event.create(newEvent) // create the habit for current user
-      .then((event) => {
-        // console.log("New habit saved:", habit);
-        return User.findByIdAndUpdate(req.session.currentUser._id, { $push: { eventsCreated: event._id } }); // Connect habit to User document
-      })
-      .then(() => {
-            Event.find(pendingJoiners) 
-        
-          }
-      )
-      .then(() => {
-        res.redirect("/profile");
-      })
-      .catch((err) => {
-        next(err);
+  if (req.body.pendingJoiners && typeof req.body.pendingJoiners == "string") {
+    pendingJoiners = [req.body.pendingJoiners];
+  }
+  if (req.body.pendingJoiners && typeof req.body.pendingJoiners == "object") {
+    pendingJoiners = req.body.pendingJoiners;
+  }
+
+  const newEvent = {
+    title,
+    creator: "6479ecee9f666d96171b88f3",
+    description,
+    icon,
+    dateTime,
+    location,
+    coordinates,
+    pendingJoiners,
+  };
+
+  Event.create(newEvent)
+    .then((event) => {
+      User.findByIdAndUpdate("6479ecee9f666d96171b88f3", {
+        $push: { eventsCreated: event._id },
       });
-  });
+      return event;
+    })
+    .then((event) => {
+      console.log("#####:", event);
+      res.json(event);
+    })
+    .catch((err) => next(err));
+});
 
-  // POST DELETE
-  router.post("/events/:eventId/delete", isLoggedIn, (req, res, next) => {
-    let { eventId } = req.params;
-    Event.findByIdAndDelete(eventId)
-      .then((event) => {
-        res.redirect("/profile");
-      })
-      .catch((err) => next(err));
-  });
+// POST DELETE
+router.post("/:eventId/delete", (req, res, next) => {
+  let { eventId } = req.params;
+  Event.findByIdAndDelete(eventId)
+    .then((event) => {
+      res.json(event);
+    })
+    .catch((err) => next(err));
+});
 
-  // POST UPDATE
-  router.post("/events/:eventId/update", isLoggedIn, (req, res, next) => {
-    const { title, description, icon, dateTime, location, coordinates } = req.body;
-    let { eventId } = req.params;
+// POST UPDATE
+router.post("/:eventId/update", (req, res, next) => {
+  const { title, description, icon, dateTime, location, coordinates } =
+    req.body;
+  let { eventId } = req.params;
 
-    Event.findByIdAndUpdate(eventId, { title, description, icon, dateTime, location, coordinates }, { new: true })
-      .then(() => {
-        res.redirect("/profile");
-      })
-      .catch((err) => next(err));
-  });
+  Event.findByIdAndUpdate(
+    eventId,
+    { title, description, icon, dateTime, location, coordinates },
+    { new: true }
+  )
+    .then((event) => {
+      res.json(event);
+    })
+    .catch((err) => next(err));
+});
 
-  // POST REJECT
-  router.post('/events/:eventId/reject', isLoggedIn, (req, res, next) => {
-    let { eventId } = req.params;
+// POST REJECT
+router.post("/:eventId/reject", (req, res, next) => {
+  let { eventId } = req.params;
 
-    User.findByIdAndUpdate(req.session.currentUser._id, { $pull: { eventsPending: eventId}})
-    .then(() => {})
-    .catch((err) => next(err))
+  User.findByIdAndUpdate(req.session.currentUser._id, {
+    $pull: { eventsPending: eventId },
   })
+    .then((event) => {
+      res.json(event);
+    })
+    .catch((err) => next(err));
+});
 
+// POST ACCEPT
+router.post("/:eventId/accept", (req, res, next) => {
+  let { eventId } = req.params;
 
-  // POST ACCEPT
-  router.post('/events/:eventId/accept', isLoggedIn, (req, res, next) => {
-    let { eventId } = req.params;
-
-    User.findByIdAndUpdate(req.session.currentUser._id, { $push: { eventsJoined: eventId } })
-    .then(() => {})
-    .catch((err) => next(err))
+  User.findByIdAndUpdate(req.session.currentUser._id, {
+    $push: { eventsJoined: eventId },
   })
+    .then((event) => {
+      res.json(event);
+    })
+    .catch((err) => next(err));
+});
 
+// POST UNJOIN
+// changeLater
+router.post("/:eventId/unjoin", (req, res, next) => {
+  let { eventId } = req.params;
 
-  // POST UNJOIN
-  router.post('/events/:eventId/unjoin', isLoggedIn, (req, res, next) => {
-    let { eventId } = req.params;
-    User.findByIdAndUpdate(req.session.currentUser._id, { $pull: { eventsJoined: eventId}})
-    .then(() => {})
-    .catch((err) => next(err))
+  User.findByIdAndUpdate("6479ece69f666d96171b88ed", {
+    $pull: { eventsJoined: eventId },
   })
+    .then(() => {
+      return User.findByIdAndUpdate("6479ece69f666d96171b88ed", {
+        $push: { eventsPending: eventId },
+      });
+    })
+    .then(() => {
+      return Event.findByIdAndUpdate(eventId, {
+        $pull: { confirmedJoiners: "6479ece69f666d96171b88ed" },
+      });
+    })
+    .then(() => {
+      return Event.findByIdAndUpdate(eventId, {
+        $push: { pendingJoiners: "6479ece69f666d96171b88ed" },
+      });
+    })
+    .then((resp) => {
+      res.json(resp);
+    })
+    .catch((err) => next(err));
+});
 
-  module.exports = router;
+module.exports = router;
