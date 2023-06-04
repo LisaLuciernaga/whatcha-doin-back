@@ -24,8 +24,17 @@ app.use("/auth", authRoutes);
 const userRoutes = require("./routes/users.routes");
 app.use("/users", userRoutes);
 
+const eventsRoutes = require("./routes/events.routes");
+app.use("/events", eventsRoutes);
+
 const listRoutes = require("./routes/lists.routes");
 app.use("/lists", listRoutes);
+
+const friendStatusRoutes = require("./routes/friendstatus.routes");
+app.use("/friendstatus", friendStatusRoutes);
+
+const notificationsRoutes = require("./routes/notifications.routes");
+// app.use("/notifications", notificationsRoutes);
 
 // ❗ To handle errors. Routes that don't exist or errors that you handle in specific routes
 require("./error-handling")(app);
