@@ -10,6 +10,7 @@ const saltRounds = 10;
 //POST -> http://localhost:5005/auth/signup
 router.post("/signup", (req, res, next) => {
   const { username, email, password, passwordRepeat, picture } = req.body;
+  // console.log("backend username:", user)
 
   if (username == "" || email == "" || password == "" || passwordRepeat == "") {
     next("Please fill in all required fields");
