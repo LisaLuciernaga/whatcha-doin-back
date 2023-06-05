@@ -8,6 +8,8 @@ router.post("/:friendId/accept", (req, res, next) => {
   let { friendId } = req.params;
 
   User.findByIdAndUpdate("64789d54e2ff6ce35af93694", {
+    //if(!User.friendsConfirmed.includes(friendId))
+    // else console.log("Friendrequest already accepted")
     $push: { friendsConfirmed: friendId },
   })
     .then((resp) => {

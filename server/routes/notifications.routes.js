@@ -14,3 +14,5 @@ router.post("/:notificationId/markread", (req, res, next) => {
     })
     .catch((err) => next(err));
 });
+
+module.exports = router;
