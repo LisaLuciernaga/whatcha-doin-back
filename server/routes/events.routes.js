@@ -29,15 +29,7 @@ const { Router } = require("express");
 // POST CREATE
 // isAuthenticated changeLater
 router.post("/create", (req, res, next) => {
-  const {
-    title,
-    description,
-    icon,
-    dateTime,
-    location,
-    coordinates,
-    pendingJoiners,
-  } = req.body;
+  const { title, description, icon, dateTime, location, coordinates, pendingJoiners } = req.body;
 
   if (req.body.pendingJoiners && typeof req.body.pendingJoiners == "string") {
     pendingJoiners = [req.body.pendingJoiners];
@@ -46,27 +38,40 @@ router.post("/create", (req, res, next) => {
     pendingJoiners = req.body.pendingJoiners;
   }
 
-  const newEvent = {
-    title,
-    creator: "6479ecee9f666d96171b88f3",
-    description,
-    icon,
+  let createdEvent = {};
+
+  const newEvent = { // changeLater: Every field should equal those retrieved from the req.body on the first line of this route's code, except for the creator.
+    title: "test",
+    creator: "6479ff1dc2ff688d4a41f2c5", // This hardcoded ID must be the current logged-in user ID, and we should be able to access it through the payload?
+    description: "test description",
+    icon: "img",
     dateTime,
     location,
     coordinates,
-    pendingJoiners,
+    pendingJoiners: ["6479ff23c2ff688d4a41f2c8", "6479ff26c2ff688d4a41f2cb"], // invited users.
   };
 
+  // 1. First thing is creating the event.
   Event.create(newEvent)
     .then((event) => {
-      User.findByIdAndUpdate("6479ecee9f666d96171b88f3", {
-        $push: { eventsCreated: event._id },
+      // 2. We insert the event ID in the array of events created by the logged-in user.
+      createdEvent = event;
+      return User.findByIdAndUpdate("6479ff1dc2ff688d4a41f2c5", {
+        //changeLater. This hardcoded ID must be the current logged-in user ID and we should be able to access it through the payload?
+        $push: { eventsCreated: createdEvent._id },
       });
-      return event;
     })
-    .then((event) => {
-      console.log("#####:", event);
-      res.json(event);
+    .then((resp) => {
+      // 3. We insert the event ID in the array of "eventsPending" of every user who was invited to the event.
+      createdEvent.pendingJoiners.forEach((invitedUser) => {
+        User.findByIdAndUpdate(invitedUser, {
+          $push: { eventsPending: createdEvent._id },
+        }).catch((err) => next(err));
+      });
+    })
+    .then((resp) => {
+      console.log("#####:", createdEvent);
+      res.json(createdEvent);
     })
     .catch((err) => next(err));
 });
@@ -83,15 +88,10 @@ router.post("/:eventId/delete", (req, res, next) => {
 
 // POST UPDATE
 router.post("/:eventId/update", (req, res, next) => {
-  const { title, description, icon, dateTime, location, coordinates } =
-    req.body;
+  const { title, description, icon, dateTime, location, coordinates } = req.body;
   let { eventId } = req.params;
 
-  Event.findByIdAndUpdate(
-    eventId,
-    { title, description, icon, dateTime, location, coordinates },
-    { new: true }
-  )
+  Event.findByIdAndUpdate(eventId, { title, description, icon, dateTime, location, coordinates }, { new: true })
     .then((event) => {
       res.json(event);
     })
