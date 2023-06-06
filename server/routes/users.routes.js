@@ -12,6 +12,11 @@ router.get("/:username", (req, res, next) => {
     .populate("friendsConfirmed", "inviteLists" )
     .populate("friendsPending", "notifications")
     //friendsPending notifications"
+    // .populate("friendsConfirmed")
+    // .populate("invitelists")
+    // .populate("friendsPending")
+    // .populate("notifications")
+    .populate("eventsJoined")
     .then((resp) => {
       res.json(resp);
     })
