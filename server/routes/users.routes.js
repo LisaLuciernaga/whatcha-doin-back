@@ -1,16 +1,17 @@
 const router = require("express").Router();
 const isAuthenticated = require("../middleware/jwt.middleware");
 const User = require("../models/User.model");
+const List = require("../models/List.model")
 
 //http://localhost:5005/users/:username
 router.get("/:username", (req, res, next) => {
   //removed isAuthenticated because needs to be accessible from other users as well changeLater
   let { username } = req.params;
   User.findOne({ username: username })
-    // .populate("friendsConfirmed")
-    // .populate("invitelists")
-    // .populate("friendsPending")
-    // .populate("notifications")
+    //populate friends, events & store in payload changeLater
+    .populate("friendsConfirmed", "inviteLists" )
+    .populate("friendsPending", "notifications")
+    //friendsPending notifications"
     .then((resp) => {
       res.json(resp);
     })

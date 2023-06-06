@@ -54,7 +54,9 @@ router.post("/login", (req, res, next) => {
         return;
       }
       //we consider the user correctly authenticated:
-      const payload = { username };
+      const payload = { username, userId: resp[0]._id };
+      //Now the payload also stores the user id!
+      console.log("payload", payload)
       const authToken = jwt.sign(payload, process.env.TOKEN_SECRET, {
         algorithm: "HS256",
         expiresIn: "24h",

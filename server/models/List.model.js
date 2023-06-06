@@ -5,6 +5,6 @@ const listSchema = new Schema({
   users: [{ type: Schema.Types.ObjectID, ref: "User" }],
 });
 
-const List = model("list", listSchema);
+const List = model("List", listSchema);
 
 module.exports = List;
