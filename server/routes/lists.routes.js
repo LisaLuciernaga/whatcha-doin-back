@@ -7,9 +7,9 @@ const User = require("../models/User.model");
 router.post("/create", (req, res, next) => {
   //isAuthenticated changeLater
   // console.log("#############", req.payload);
-  let { name, users } = req.body;
+  let { title, users } = req.body;
   let currentUserId = req.payload.userId;
-  List.create({ name, users })
+  List.create({ title, users })
     .then((list) => {
       return User.findByIdAndUpdate(
         { _id: currentUserId },
@@ -25,12 +25,12 @@ router.post("/create", (req, res, next) => {
 //http://localhost:5005/lists/:listId/update
 router.post("/:listId/update", (req, res, next) => {
   let { listId } = req.params;
-  let { name } = req.body; //changeLater - isn't there a more elegant way of making this an object right away?
-  let newName = {
-    name,
+  let { title } = req.body; //changeLater - isn't there a more elegant way of making this an object right away?
+  let newTitle = {
+    title,
   };
 
-  List.findByIdAndUpdate(listId, newName)
+  List.findByIdAndUpdate(listId, newTitle)
     .then((list) => {
       res.json(list);
     })
