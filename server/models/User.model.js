@@ -9,7 +9,7 @@ const userSchema = new Schema({
     default:
       "https://res.cloudinary.com/dqzjo5wsl/image/upload/v1684481335/habit-pics/tbeshupek9snljclqogf.png",
   },
-  friendsConfirmed: { type: [] },
+  friendsConfirmed: [{ type: Schema.Types.ObjectID, ref: "User" }],
   inviteLists: [{ type: Schema.Types.ObjectID, ref: "List" }],
   friendsPending: [{ type: Schema.Types.ObjectID, ref: "User" }],
   notifications: [{ type: Schema.Types.ObjectID, ref: "Notification" }],
