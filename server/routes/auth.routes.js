@@ -54,7 +54,9 @@ router.post("/login", (req, res, next) => {
         return;
       }
       //we consider the user correctly authenticated:
-      const payload = { username };
+      const payload = { username, userId: resp[0]._id };
+      //Now the payload also stores the user id!
+      console.log("payload", payload)
       const authToken = jwt.sign(payload, process.env.TOKEN_SECRET, {
         algorithm: "HS256",
         expiresIn: "24h",
@@ -65,7 +67,7 @@ router.post("/login", (req, res, next) => {
 });
 
 // POST "/api/upload" => Route that receives the image, sends it to Cloudinary via the fileUploader and returns the image URL
-//poner :userid en la ruta!!!
+//poner :userid en la ruta!!! (??????)
 router.post("/upload", fileUploader.single("picture"), (req, res, next) => {
   // console.log("file is: ", req.file)
  
@@ -87,19 +89,19 @@ router.get("/verify", isAuthenticated, (req, res, next) => {
 });
 
 
-// POST "/api/upload" => Route that receives the image, sends it to Cloudinary via the fileUploader and returns the image URL
-router.post("/upload", fileUploader.single("picture"), (req, res, next) => {
-  // console.log("file is: ", req.file)
+// // POST "/api/upload" => Route that receives the image, sends it to Cloudinary via the fileUploader and returns the image URL
+// router.post("/upload", fileUploader.single("picture"), (req, res, next) => {
+//   // console.log("file is: ", req.file)
  
-  if (!req.file) {
-    next(new Error("No file uploaded!"));
-    return;
-  }
+//   if (!req.file) {
+//     next(new Error("No file uploaded!"));
+//     return;
+//   }
 
-  // Get the URL of the uploaded file and send it as a response.
-  // 'fileUrl' can be any name, just make sure you remember to use the same when accessing it on the frontend
+//   // Get the URL of the uploaded file and send it as a response.
+//   // 'fileUrl' can be any name, just make sure you remember to use the same when accessing it on the frontend
 
-  res.json({ fileUrl: req.file.path });
-});
+//   res.json({ fileUrl: req.file.path });
+// });
 
 module.exports = router;
