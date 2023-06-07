@@ -29,7 +29,7 @@ const { Router } = require("express");
 // POST CREATE
 // isAuthenticated changeLater
 router.post("/create", (req, res, next) => {
-  const { title, description, creator, icon, dateTime, location, coordinates, pendingJoiners } = req.body;
+  let { title, description, creator, icon, dateTime, location, coordinates, pendingJoiners } = req.body;
 
   if (req.body.pendingJoiners && typeof req.body.pendingJoiners == "string") {
     pendingJoiners = [req.body.pendingJoiners];
