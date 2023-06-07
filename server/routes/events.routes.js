@@ -29,7 +29,7 @@ const { Router } = require("express");
 // POST CREATE
 // isAuthenticated changeLater
 router.post("/create", (req, res, next) => {
-  const { title, description, icon, dateTime, location, coordinates, pendingJoiners } = req.body;
+  const { title, description, creator, icon, dateTime, location, coordinates, pendingJoiners } = req.body;
 
   if (req.body.pendingJoiners && typeof req.body.pendingJoiners == "string") {
     pendingJoiners = [req.body.pendingJoiners];
@@ -41,14 +41,14 @@ router.post("/create", (req, res, next) => {
   let createdEvent = {};
 
   const newEvent = { // changeLater: Every field should equal those retrieved from the req.body on the first line of this route's code, except for the creator.
-    title: "test",
-    creator: "6479ff1dc2ff688d4a41f2c5", // This hardcoded ID must be the current logged-in user ID, and we should be able to access it through the payload?
-    description: "test description",
+    title,
+    creator, 
+    description,
     icon: "img",
     dateTime,
     location,
     coordinates,
-    pendingJoiners: ["6479ff23c2ff688d4a41f2c8", "6479ff26c2ff688d4a41f2cb"], // invited users.
+    pendingJoiners, // invited users.
   };
 
   // 1. First thing is creating the event.

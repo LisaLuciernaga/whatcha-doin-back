@@ -9,14 +9,13 @@ router.get("/:username", (req, res, next) => {
   let { username } = req.params;
   User.findOne({ username: username })
     //populate friends, events & store in payload changeLater
-    .populate("eventsCreated friendsPending inviteLists friendsConfirmed notifications" )
+    .populate("eventsCreated eventsJoined friendsPending inviteLists friendsConfirmed notifications" )
     // .populate("friendsConfirmed", "notifications")
     //friendsPending notifications"
     // .populate("friendsConfirmed")
     // .populate("invitelists")
     // .populate("friendsPending")
     // .populate("notifications")
-    .populate("eventsJoined")
     .then((resp) => {
       res.json(resp);
     })
