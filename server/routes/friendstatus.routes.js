@@ -13,8 +13,13 @@ router.post("/:friendId/accept", isAuthenticated, (req, res, next) => {
     $push: { friendsConfirmed: friendId },
     $pull: { friendsPending: friendId },
   })
+  .then(()=>{
+    return User.findByIdAndUpdate(friendId, {
+      $push: { friendsConfirmed: currentUserId },
+    })
+  })
     .then((resp) => {
-      res.json(resp);
+      res.json("friendship successfully accepted");
     })
     .catch((err) => next(err));
 });
@@ -26,8 +31,13 @@ router.post("/:friendId/remove", isAuthenticated, (req, res, next) => {
   User.findByIdAndUpdate(currentUserId, {
     $pull: { friendsConfirmed: friendId },
   })
+  .then(()=>{
+    return User.findByIdAndUpdate(friendId, {
+      $pull: { friendsConfirmed: currentUserId },
+    })
+  })
     .then((resp) => {
-      res.json(resp);
+      res.json("friendship successfully revoked");
     })
     .catch((err) => next(err));
 });
