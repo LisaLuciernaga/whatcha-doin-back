@@ -13,6 +13,7 @@ router.get("/:username", (req, res, next) => {
     .populate("inviteLists")
     .populate("friendsPending")
     .populate("notifications")
+    .populate("eventsCreated")
     .then((resp) => {
       res.json(resp);
     })
