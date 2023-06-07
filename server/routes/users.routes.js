@@ -16,18 +16,6 @@ router.get("/:username", (req, res, next) => {
 });
 
 //http://localhost:5005/users/:userID 
-// THIS ONE IS NOT POPULATED
-router.get("/:userId", (req, res, next) => {
-  //removed isAuthenticated changeLater
-  let { userId } = req.params;
-  User.findById({ userId })
-    .then((resp) => {
-      res.json(resp);
-    })
-    .catch((err) => next(err));
-});
-
-//http://localhost:5005/users/:userID 
 // THIS ONE IS ALSO NOT POPULATED
 // We need one unpopulated GET by username for when retrieving info of user profiles. 
 router.get("/:username/raw", (req, res, next) => {
