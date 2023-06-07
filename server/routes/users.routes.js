@@ -8,14 +8,20 @@ router.get("/:username", (req, res, next) => {
   //removed isAuthenticated because needs to be accessible from other users as well changeLater
   let { username } = req.params;
   User.findOne({ username: username })
-    //populate friends, events & store in payload changeLater
     .populate("eventsCreated eventsJoined eventsPending friendsPending inviteLists friendsConfirmed notifications" )
-    // .populate("friendsConfirmed", "notifications")
-    //friendsPending notifications"
-    // .populate("friendsConfirmed")
-    // .populate("invitelists")
-    // .populate("friendsPending")
-    // .populate("notifications")
+    .then((resp) => {
+      res.json(resp);
+    })
+    .catch((err) => next(err));
+});
+
+//http://localhost:5005/users/:userID 
+// THIS ONE IS ALSO NOT POPULATED
+// We need one unpopulated GET by username for when retrieving info of user profiles. 
+router.get("/:username/raw", (req, res, next) => {
+  //removed isAuthenticated changeLater
+  let { username } = req.params;
+  User.findOne({ username: username })
     .then((resp) => {
       res.json(resp);
     })
