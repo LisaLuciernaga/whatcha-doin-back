@@ -11,6 +11,7 @@ router.post("/:friendId/accept", isAuthenticated, (req, res, next) => {
     //if(!User.friendsConfirmed.includes(friendId))
     // else console.log("Friendrequest already accepted")
     $push: { friendsConfirmed: friendId },
+    $pull: { friendsPending: friendId },
   })
     .then((resp) => {
       res.json(resp);
