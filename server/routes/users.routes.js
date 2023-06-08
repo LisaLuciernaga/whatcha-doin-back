@@ -9,13 +9,19 @@ router.get("/:username", (req, res, next) => {
   let { username } = req.params;
   User.findOne({ username: username })
     .populate("eventsCreated eventsJoined eventsPending friendsPending inviteLists friendsConfirmed notifications" )
+    .populate({
+      path:"inviteLists",
+      populate: {
+        path: "users"
+      }
+    })
     .then((resp) => {
       res.json(resp);
     })
     .catch((err) => next(err));
 });
 
-//http://localhost:5005/users/:userID 
+
 // THIS ONE IS ALSO NOT POPULATED
 // We need one unpopulated GET by username for when retrieving info of user profiles. 
 router.get("/:username/raw", (req, res, next) => {
