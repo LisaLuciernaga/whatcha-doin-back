@@ -40,9 +40,9 @@ router.post("/create", (req, res, next) => {
 
   let createdEvent = {};
 
-  const newEvent = { // changeLater: Every field should equal those retrieved from the req.body on the first line of this route's code, except for the creator.
+  const newEvent = { 
     title,
-    creator, 
+    creator,
     description,
     icon: "img",
     dateTime,
@@ -56,8 +56,7 @@ router.post("/create", (req, res, next) => {
     .then((event) => {
       // 2. We insert the event ID in the array of events created by the logged-in user.
       createdEvent = event;
-      return User.findByIdAndUpdate("6479ff1dc2ff688d4a41f2c5", {
-        //changeLater. This hardcoded ID must be the current logged-in user ID and we should be able to access it through the payload?
+      return User.findByIdAndUpdate(creator, {
         $push: { eventsCreated: createdEvent._id },
       });
     })
