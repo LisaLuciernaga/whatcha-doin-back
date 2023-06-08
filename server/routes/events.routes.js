@@ -26,6 +26,11 @@ const { Router } = require("express");
 //   },
 // });
 
+// GET EVENT
+router.get("/:eventId", (req, res, next) => {
+  
+})
+
 // POST CREATE
 // isAuthenticated changeLater
 router.post("/create", (req, res, next) => {
