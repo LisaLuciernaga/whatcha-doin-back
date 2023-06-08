@@ -4,7 +4,7 @@ const List = require("../models/List.model");
 const User = require("../models/User.model");
 
 //http://localhost:5005/lists/create
-router.post("/create", (req, res, next) => {
+router.post("/create", isAuthenticated, (req, res, next) => {
   //isAuthenticated changeLater
   // console.log("#############", req.payload);
   let { title, users } = req.body;
