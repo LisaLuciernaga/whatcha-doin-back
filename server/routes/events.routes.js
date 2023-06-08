@@ -40,9 +40,9 @@ router.post("/create", (req, res, next) => {
 
   let createdEvent = {};
 
-  const newEvent = { // changeLater: Every field should equal those retrieved from the req.body on the first line of this route's code, except for the creator.
+  const newEvent = { 
     title,
-    creator, 
+    creator,
     description,
     icon: "img",
     dateTime,
@@ -56,8 +56,7 @@ router.post("/create", (req, res, next) => {
     .then((event) => {
       // 2. We insert the event ID in the array of events created by the logged-in user.
       createdEvent = event;
-      return User.findByIdAndUpdate("6479ff1dc2ff688d4a41f2c5", {
-        //changeLater. This hardcoded ID must be the current logged-in user ID and we should be able to access it through the payload?
+      return User.findByIdAndUpdate(creator, {
         $push: { eventsCreated: createdEvent._id },
       });
     })
@@ -77,7 +76,7 @@ router.post("/create", (req, res, next) => {
 });
 
 // POST DELETE
-router.post("/:eventId/delete", (req, res, next) => {
+router.post("/:eventId/delete", isAuthenticated, (req, res, next) => {
   let { eventId } = req.params;
   Event.findByIdAndDelete(eventId)
     .then((event) => {
@@ -87,7 +86,7 @@ router.post("/:eventId/delete", (req, res, next) => {
 });
 
 // POST UPDATE
-router.post("/:eventId/update", (req, res, next) => {
+router.post("/:eventId/update", isAuthenticated, (req, res, next) => {
   const { title, description, icon, dateTime, location, coordinates } = req.body;
   let { eventId } = req.params;
 
@@ -99,10 +98,10 @@ router.post("/:eventId/update", (req, res, next) => {
 });
 
 // POST REJECT
-router.post("/:eventId/reject", (req, res, next) => {
+router.post("/:eventId/reject", isAuthenticated, (req, res, next) => {
   let { eventId } = req.params;
 
-  User.findByIdAndUpdate(req.session.currentUser._id, {
+  User.findByIdAndUpdate(req.payload.userId, {
     $pull: { eventsPending: eventId },
   })
     .then((event) => {
@@ -112,11 +111,17 @@ router.post("/:eventId/reject", (req, res, next) => {
 });
 
 // POST ACCEPT
-router.post("/:eventId/accept", (req, res, next) => {
+router.post("/:eventId/accept", isAuthenticated, (req, res, next) => {
   let { eventId } = req.params;
-
-  User.findByIdAndUpdate(req.session.currentUser._id, {
+  return User.findByIdAndUpdate(req.payload.userId, {
     $push: { eventsJoined: eventId },
+    $pull: { eventsPending: eventId }
+  })
+  .then((user) => {
+    return Event.findByIdAndUpdate(eventId, {
+      $push: { confirmedJoiners: req.payload.userId },
+      $pull: { pendingJoiners: req.payload.userId }
+    })
   })
     .then((event) => {
       res.json(event);
@@ -126,25 +131,17 @@ router.post("/:eventId/accept", (req, res, next) => {
 
 // POST UNJOIN
 // changeLater
-router.post("/:eventId/unjoin", (req, res, next) => {
+router.post("/:eventId/unjoin", isAuthenticated, (req, res, next) => {
   let { eventId } = req.params;
 
-  User.findByIdAndUpdate("6479ece69f666d96171b88ed", {
+   return User.findByIdAndUpdate(req.payload.userId, {
     $pull: { eventsJoined: eventId },
+    $push: { eventsPending: eventId }
   })
-    .then(() => {
-      return User.findByIdAndUpdate("6479ece69f666d96171b88ed", {
-        $push: { eventsPending: eventId },
-      });
-    })
-    .then(() => {
-      return Event.findByIdAndUpdate(eventId, {
-        $pull: { confirmedJoiners: "6479ece69f666d96171b88ed" },
-      });
-    })
-    .then(() => {
-      return Event.findByIdAndUpdate(eventId, {
-        $push: { pendingJoiners: "6479ece69f666d96171b88ed" },
+  .then(() => {
+    return Event.findByIdAndUpdate(eventId, {
+    $pull: { confirmedJoiners: req.payload.userId },
+    $push: { pendingJoiners: req.payload.userId },
       });
     })
     .then((resp) => {
