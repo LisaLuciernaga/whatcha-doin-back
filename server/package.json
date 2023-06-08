@@ -13,9 +13,13 @@
     "dotenv": "^16.0.3",
     "express": "^4.18.2",
     "express-jwt": "^8.4.1",
+    "fly": "^4.5.7",
     "jsonwebtoken": "^9.0.0",
     "mongoose": "^7.1.0",
     "morgan": "^1.10.0",
     "serve-favicon": "^2.5.0"
+  },
+  "devDependencies": {
+    "@flydotio/dockerfile": "^0.2.14"
   }
 }
