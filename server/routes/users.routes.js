@@ -29,7 +29,7 @@ router.get("/:username/raw", (req, res, next) => {
 });
 
 //http://localhost:5005/users/:userId/edit
-router.post("/:userId/edit", (req, res, next) => {
+router.post("/:userId/edit", isAuthenticated, (req, res, next) => {
   //isAuthenticated changeLater
   let { userId } = req.params;
   // let { userId } = req.payload;
