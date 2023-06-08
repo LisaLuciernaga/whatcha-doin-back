@@ -6,13 +6,13 @@ const User = require("../models/User.model");
 //http://localhost:5005/lists/create
 router.post("/create", isAuthenticated, (req, res, next) => {
   //isAuthenticated changeLater
-  // console.log("#############", req.payload);
+  console.log("#############", req.payload);
   let { title, users } = req.body;
   let currentUserId = req.payload.userId;
   List.create({ title, users })
     .then((list) => {
       return User.findByIdAndUpdate(
-        { _id: currentUserId },
+       currentUserId,
         { $push: { inviteLists: list._id } }
       );
     })

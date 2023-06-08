@@ -1,10 +1,10 @@
 const router = require("express").Router();
 const User = require("../models/User.model");
+const Event = require("../models/Event.model");
 // const { DateTime } = require("luxon");
 
 const isAuthenticated = require("../middleware/jwt.middleware");
 
-const Event = require("../models/Event.model");
 const { Router } = require("express");
 
 //CLOUDINARY
@@ -25,6 +25,17 @@ const { Router } = require("express");
 //     allowed_formats: ["jpg", "png", "jpeg", "webp", "png"],
 //   },
 // });
+
+// GET EVENT
+router.get("/:eventId", isAuthenticated, (req, res, next) => {
+  let { eventId } = req.params;
+  Event.findById(eventId)
+  .populate("creator confirmedJoiners")
+  .then((resp) => {
+    res.json(resp);
+  })
+  .catch((err) => next(err));
+})
 
 // POST CREATE
 // isAuthenticated changeLater
