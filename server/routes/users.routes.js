@@ -8,7 +8,7 @@ router.get("/:username", (req, res, next) => {
   //removed isAuthenticated because needs to be accessible from other users as well changeLater
   let { username } = req.params;
   User.findOne({ username: username })
-    .populate("eventsCreated eventsJoined friendsPending inviteLists friendsConfirmed notifications" )
+    .populate("eventsCreated eventsJoined eventsPending friendsPending inviteLists friendsConfirmed notifications" )
     .populate({
       path:"inviteLists",
       populate: {
