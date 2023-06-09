@@ -3,6 +3,18 @@ const isAuthenticated = require("../middleware/jwt.middleware");
 const User = require("../models/User.model");
 const List = require("../models/List.model")
 
+//ROUTE TO GET ALL USERS FOR FINDFRIENDS
+//http://localhost:5005/users/all
+router.get("/all", (req, res, next) => {
+  //isAuthenticated changeLater
+  User.find()
+    .then((users) => {
+      console.log('USERSSS: ', users)
+      res.json(users)
+    })
+    .catch((err) => next(err));
+});
+
 //http://localhost:5005/users/:username
 router.get("/:username", (req, res, next) => {
   //removed isAuthenticated because needs to be accessible from other users as well changeLater
@@ -21,7 +33,7 @@ router.get("/:username", (req, res, next) => {
     .catch((err) => next(err));
 });
 
-//http://localhost:5005/users/:username/raw
+
 // THIS ONE IS ALSO NOT POPULATED
 // We need one unpopulated GET by username for when retrieving info of user profiles. 
 router.get("/:username/raw", (req, res, next) => {
@@ -47,5 +59,6 @@ router.post("/:userId/edit", (req, res, next) => {
     })
     .catch((err) => next(err));
 });
+
 
 module.exports = router;
